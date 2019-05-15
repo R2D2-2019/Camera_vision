@@ -13,7 +13,7 @@ init script into `/etc/init.d`. init scripts should be run
 by root:
 
 ```shell
-sudo chown root /etc/init.d/camera
+sudo chown root:root /etc/init.d/camera
 ```
 
 and permission to execute should be set:
