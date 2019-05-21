@@ -69,6 +69,22 @@ class PiCam:
         :return:
         """
         timestr = "pic" + time.strftime("%m-%d-%H:%M:%S") + ".jpg"
+        self.camera.framerate = Fraction(1, 6)
+        self.camera.sensor_mode = 3
+        self.camera.shutter_speed = 6000000
+        self.camera.iso = 800
+        # give it a long sleep to gain all the light
+        time.sleep(30)
+        self.camera.exposure_mode = 'off'
+        self.camera.capture(timestr)
+        # return settings back to normal
+        self.camera.framerate = 30
+        self.camera.sensor_mode = 0
+        self.camera.shutter_speed = 0
+        self.camera.iso = 0
+        self.camera.exposure_mode = 'on'
+
+
 
     def set_brightness(self, value):
         """
