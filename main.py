@@ -3,14 +3,14 @@ from sys import platform
 import signal
 
 from client.comm import Comm
-from module import webcam
+from module import pi_cam
 
 should_stop = False
 
 
 def main():
     print("Starting application...\n")
-    module = webcam(Comm())
+    module = pi_cam(Comm())
     print("Module created...")
 
     while not should_stop:
