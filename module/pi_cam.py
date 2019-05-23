@@ -1,5 +1,6 @@
 from picamera import PiCamera
 import time
+from time import strftime, localtime
 from fractions import Fraction
 
 
@@ -8,13 +9,12 @@ class PiCam:
     Picam class
     Default resolution = 1280 by 720
     """
-    brightness = 50
-    contrast = 50
-
-    def __init_(self):
+    def __init__(self):
         self.camera = PiCamera()
         self.camera.resolution = (1280, 720)
         time.sleep(2)
+        self.brightness = 50
+        self.contrast = 50
 
     # def __init__(self, comm: BaseComm):
     #    self.comm = comm
@@ -42,8 +42,7 @@ class PiCam:
         :param time: Time in seconds
         :return:
         """
-        timestr = "vid" + time.strftime("%m-%d-%H:%M:%S") + ".mpeg"
-
+        timestr = "vid" + strftime("%m-%d-%H:%M:%S", localtime()) + ".h264"
         self.camera.start_preview()
         self.camera.start_recording(timestr, quality=30)
         self.camera.wait_recording(time)
@@ -51,7 +50,6 @@ class PiCam:
         self.camera.stop_preview()
 
     def capture(self):
-        # Gotta add in that filename has date/time in it
         """
         Function to capture a single frame. The file is saved as a .jpg file with the name pic(moment of video taken)
         :return:
@@ -87,7 +85,7 @@ class PiCam:
         self.camera.sensor_mode = 0
         self.camera.shutter_speed = 0
         self.camera.iso = 0
-        self.camera.exposure_mode = 'on'
+        self.camera.exposure_mode = 'auto'
 
     def set_brightness(self, value):
         """
@@ -118,3 +116,12 @@ class PiCam:
         :return: contrast value
         """
         return self.contrast
+
+
+if __name__ == "__main__":
+    my_cam = PiCam()
+
+    if my_cam != 0:
+        my_cam.low_light_capture()
+
+    print("[+] done!")
