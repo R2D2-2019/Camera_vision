@@ -11,25 +11,30 @@ class PiCam:
     brightness = 50
     contrast = 50
 
-    def __init__(self, comm: BaseComm):
-        self.comm = comm
-        # self.comm,listen_for([FrameType.tobeadded])
+    def __init_(self):
         self.camera = PiCamera()
         self.camera.resolution = (1280, 720)
-        # Warm up camera
         time.sleep(2)
 
-    def process(self):
-        while self.comm.has_data():
-            frame = self.comm.get_data()
+    # def __init__(self, comm: BaseComm):
+    #    self.comm = comm
+    #    # self.comm,listen_for([FrameType.tobeadded])
+    #    self.camera = PiCamera()
+    #    self.camera.resolution = (1280, 720)
+        # Warm up camera
+    #    time.sleep(2)
 
-            if frame.request:
-                continue
+    # def process(self):
+    #    while self.comm.has_data():
+    #        frame = self.comm.get_data()
 
-            values = frame.get_data()
+    #       if frame.request:
+    #            continue
 
-    def stop(self):
-        self.comm.stop()
+    #        values = frame.get_data()
+
+    # def stop(self):
+    #    self.comm.stop()
 
     def record(self, time):
         """
@@ -83,8 +88,6 @@ class PiCam:
         self.camera.shutter_speed = 0
         self.camera.iso = 0
         self.camera.exposure_mode = 'on'
-
-
 
     def set_brightness(self, value):
         """
