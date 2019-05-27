@@ -10,31 +10,12 @@ class PiCam:
     Default resolution = 1280 by 720
     """
     def __init__(self):
-        self.camera = PiCamera()
-        self.camera.resolution = (1280, 720)
-        time.sleep(2)
         self.brightness = 50
         self.contrast = 50
-
-    # def __init__(self, comm: BaseComm):
-    #    self.comm = comm
-    #    # self.comm,listen_for([FrameType.tobeadded])
-    #    self.camera = PiCamera()
-    #    self.camera.resolution = (1280, 720)
-        # Warm up camera
-    #    time.sleep(2)
-
-    # def process(self):
-    #    while self.comm.has_data():
-    #        frame = self.comm.get_data()
-
-    #       if frame.request:
-    #            continue
-
-    #        values = frame.get_data()
-
-    # def stop(self):
-    #    self.comm.stop()
+        self.resolution = (1280, 720)
+        self.camera = PiCamera()
+        self.camera.resolution = self.resolution
+        time.sleep(2)
 
     def record(self, time):
         """
@@ -64,7 +45,8 @@ class PiCam:
         :param y: amount of pixels for y
         :return:
         """
-        self.camera.resolution = (x, y)
+        self.resolution = (x, y)
+        self.camera.resolution = self.resolution
 
     def low_light_capture(self):
         """
@@ -116,12 +98,3 @@ class PiCam:
         :return: contrast value
         """
         return self.contrast
-
-
-if __name__ == "__main__":
-    my_cam = PiCam()
-
-    if my_cam != 0:
-        my_cam.low_light_capture()
-
-    print("[+] done!")
