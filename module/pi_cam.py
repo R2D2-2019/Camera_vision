@@ -1,3 +1,7 @@
+# includes for the python BUS
+from client.comm import BaseComm
+from common.frame_enum import FrameType
+# module specific includes
 from picamera import PiCamera
 import time
 from time import strftime, localtime
@@ -9,13 +13,33 @@ class PiCam:
     Picam class
     Default resolution = 1280 by 720
     """
-    def __init__(self):
+    def __init__(self, comm: BaseComm):
+		self.comm = comm
+		self.comm.listen_for([FrameType.PLACEHOLDER]) # Implement frametype ASAP!
+
         self.brightness = 50
         self.contrast = 50
         self.resolution = (1280, 720)
         self.camera = PiCamera()
         self.camera.resolution = self.resolution
         time.sleep(2)
+
+	def process(self):
+		while self.comm.has_data():
+			frame = self.comm.get_data()
+
+			if frame.request:
+				continue
+
+			values = frame.get_data()
+
+			if values[0] == "record":
+				record(values(1)) # values[1] should hold the time
+			else:
+				continue # should add more functionality later?
+
+	def stop(self):
+		self.comm.stop()
 
     def record(self, time):
         """
