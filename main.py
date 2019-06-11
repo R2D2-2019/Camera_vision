@@ -2,15 +2,19 @@ from time import sleep
 from sys import platform
 import signal
 
+from time import sleep
+from sys import platform
+import signal
+
 from client.comm import Comm
-from module import pi_cam
+from modules.rgb_camera.module.pi_cam import PiCam
 
 should_stop = False
 
 
 def main():
     print("Starting application...\n")
-    module = pi_cam(Comm())
+    module = PiCam(Comm())
     print("Module created...")
 
     while not should_stop:
