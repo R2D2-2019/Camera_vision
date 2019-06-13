@@ -2,7 +2,6 @@
 from client.comm import BaseComm
 from common.frame_enum import FrameType
 # module specific includes
-from picamera import PiCamera
 
 import time
 from time import strftime, localtime
@@ -26,22 +25,7 @@ class PiCam:
         self.camera.resolution = self.resolution
         time.sleep(2)
 
-    def process(self):
-        while self.comm.has_data():
-            frame = self.comm.get_data()
 
-            if frame.request:
-                continue
-
-            values = frame.get_data()
-
-            if values[0] == "record":
-                record(values(1))  # values[1] should hold the time
-            else:
-                continue  # should add more functionality later?
-
-    def stop(self):
-        self.comm.stop()
 
     def record(self, time):
         """
@@ -123,4 +107,9 @@ class PiCam:
         Returns the current contrast of the camera
         :return: contrast value
         """
-        return self.contrast
+        return self.camera.contrast
+
+
+class PiCameraConfigurationHandler:
+    def __init__(self):
+        pass
