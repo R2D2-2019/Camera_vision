@@ -11,13 +11,15 @@ class PiCam:
     Default resolution = 1280 by 720
     """
 
-    def __init__(self):
-        self.brightness = 50
-        self.contrast = 50
-        self.resolution = (1280, 720)
+    def __init__(self, **kwargs):
         self.camera = PiCamera()
-        self.camera.resolution = self.resolution
-        time.sleep(2)
+        for k, v in kwargs.items():
+            self.set_param(k, v)
+
+    def set_param(self, k, v):
+        """ I've opted not to attempt implementing all the different unique features.
+        The reason for this is because I've counted well over 400 features."""
+        pass
 
     def record(self, time):
         """
