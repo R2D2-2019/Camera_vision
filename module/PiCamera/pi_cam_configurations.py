@@ -14,14 +14,24 @@ class BasePiCameraConfiguration:
 
 
 class LowLightCameraConfiguration(BasePiCameraConfiguration):
+    """The basic configuration that uses the low light options that the camera permits."""
     pass
 
 
-class
+class DefaultConfiguration(BasePiCameraConfiguration):
+    """The default configuration for 'normal' (not too bright not too dim) lighting"""
+    pass
+
+
+class AutoConfiguration(BasePiCameraConfiguration):
+    """Configuration that will try to use as many auto functions of the camera"""
+    pass
 
 
 class CustomPiCameraConfiguration(BasePiCameraConfiguration):
     """Although it isn't the nicest approach, it would be preferable to update the camera configuration on the fly"""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
+        for k, v in kwargs.items():
+            setattr(self, k, v)

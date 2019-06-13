@@ -1,4 +1,3 @@
-e
 # module specific includes
 
 import time
