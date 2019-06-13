@@ -1,6 +1,4 @@
-# includes for the python BUS
-from client.comm import BaseComm
-from common.frame_enum import FrameType
+e
 # module specific includes
 
 import time
@@ -14,18 +12,13 @@ class PiCam:
     Default resolution = 1280 by 720
     """
 
-    def __init__(self, comm: BaseComm):
-        self.comm = comm
-        self.comm.listen_for([FrameType.PLACEHOLDER])  # Implement frametype ASAP!
-
+    def __init__(self):
         self.brightness = 50
         self.contrast = 50
         self.resolution = (1280, 720)
         self.camera = PiCamera()
         self.camera.resolution = self.resolution
         time.sleep(2)
-
-
 
     def record(self, time):
         """

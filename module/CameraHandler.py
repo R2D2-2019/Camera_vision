@@ -1,5 +1,12 @@
+# includes for the python BUS
+from client.comm import BaseComm
+from common.frame_enum import FrameType
+
+
 class CameraHandler:
-    def __init__(self):
+    def __init__(self, comm: BaseComm):
+        self.comm = comm
+        self.comm.listen_for([FrameType.PLACEHOLDER])  # Implement frametype ASAP!
         """ Should detect which camera's are present"""
         pass
 
@@ -8,6 +15,7 @@ class CameraHandler:
         pass
 
     def process(self):
+
         while self.comm.has_data():
             frame = self.comm.get_data()
 
@@ -24,7 +32,6 @@ class CameraHandler:
     def stop(self):
         self.comm.stop()
 
-
     def start_recording(self):
         """ Instructs a camera to start recording """
         pass
@@ -32,4 +39,3 @@ class CameraHandler:
     def stop_recording(self):
         """ Instructs a camera to stop recording """
         pass
-
