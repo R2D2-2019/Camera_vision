@@ -106,7 +106,7 @@ class PiCamV1:
         return self.camera.contrast
 
 
-def PiCameraFactory():
+def pi_camera_factory():
     return PiCamV1()
 
 

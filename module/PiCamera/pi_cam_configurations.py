@@ -36,7 +36,6 @@ class DefaultConfiguration(BasePiCameraConfiguration):
     """
     Sets most camera settings to various default values.
     """
-
     def __init__(self):
         self.settings = {
             '_exif_tags': {
