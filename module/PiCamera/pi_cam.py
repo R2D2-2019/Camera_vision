@@ -57,6 +57,24 @@ class PiCamV1:
         timestr = "pic" + time.strftime("%m-%d-%H:%M:%S") + ".jpg"
         self.camera.capture(timestr)
 
+    def instantiate_resolutions(self):
+        allowed_video_resolutions = [
+            ['2592', '1944'],
+            ['1296', '972'],
+            ['1296', '730'],
+            ['640', '480'],
+            ['640', '480'],
+            ['1920', '1080'],
+        ]
+        allowed_frame_rates_ranges = [
+            [1, 15],
+            [1, 42],
+            [1, 49],
+            [42.1, 60],
+            [60.1, 90],
+            [1, 30]
+        ]
+
     def set_resolution(self, x, y):
         """
         Changes the resolution of the PiCamera
@@ -110,6 +128,21 @@ def pi_camera_factory():
     return PiCamV1()
 
 
-class PiCameraConfigurationHandler:
-    def __init__(self):
+class VideoResolution:
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def is_resolution(self, x, y):
+        if self.x is x and self.y is y:
+            return True
+        return False
+
+    def calculate_aspect_ratio(self, a, b):
+
         pass
+
+    class PiCameraConfigurationHandler:
+        def __init__(self):
+            pass
