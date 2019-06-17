@@ -125,6 +125,7 @@ class PiCamV1:
 
 
 def pi_camera_factory():
+    # TODO : if picamera.revision > 1:
     return PiCamV1()
 
 
