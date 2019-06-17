@@ -13,7 +13,11 @@ class PiCam:
 
     def __init__(self, **kwargs):
         self.camera = PiCamera()
-        self.buffed_settings = {
+
+        # defined_settings are the settings that are currently implemented with their own validation of camera input.
+        # This means that other settings can be accessible but don't have any level of validation a.k.a no idea if they
+        # Truly work as expected.
+        self.defined_settings = {
             'resolution': self.set_resolution,
             'brightness': self.set_brightness,
             'contrast': self.set_contrast
@@ -27,11 +31,11 @@ class PiCam:
         """ I've opted not to attempt implementing all the different unique features.
         The reason for this is because I've counted well over 400 features."""
 
-        if k in self.buffed_settings.keys():
-            self.buffed_settings[k](v)
+        if k in self.defined_settings.keys():
+            self.defined_settings[k](v)
         else:
-            setattr(self.camera, k, v) # I can imagine new functions will be implemented without needing
-            # It's own valdiation, therefore I will implement a default behaviour call.
+            setattr(self.camera, k, v)  # I can imagine new functions will be implemented without needing
+            # It's own validation, therefore I will implement a default behaviour call.
 
     def record(self, time):
         """
@@ -61,6 +65,9 @@ class PiCam:
         :param y: amount of pixels for y
         :return:
         """
+
+
+
         self.settings.resolution = (x, y)
         self.camera.resolution = self.settings.resolution
 
@@ -77,7 +84,14 @@ class PiCam:
         Returns the brightness of the camera
         :return: brightness value
         """
-        return self.brightness
+        return self.camera.brightness
+
+    def get_settings(self):
+        """ Returns the dict containing all the settings that have been stored.
+        :returns settings dict
+        """
+
+        return self.settings
 
     def set_contrast(self, value):
         """
