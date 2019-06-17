@@ -2,7 +2,6 @@
 
 import time
 from time import strftime, localtime
-from fractions import Fraction
 
 
 class PiCamV1:
