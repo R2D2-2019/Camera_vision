@@ -13,13 +13,25 @@ class PiCam:
 
     def __init__(self, **kwargs):
         self.camera = PiCamera()
+        self.buffed_settings = {
+            'resolution': self.set_resolution,
+            'brightness': self.set_brightness,
+            'contrast': self.set_contrast
+        }
+        self.settings = dict()
+
         for k, v in kwargs.items():
             self.set_param(k, v)
 
     def set_param(self, k, v):
         """ I've opted not to attempt implementing all the different unique features.
         The reason for this is because I've counted well over 400 features."""
-        pass
+
+        if k in self.buffed_settings.keys():
+            self.buffed_settings[k](v)
+        else:
+            setattr(self.camera, k, v) # I can imagine new functions will be implemented without needing
+            # It's own valdiation, therefore I will implement a default behaviour call.
 
     def record(self, time):
         """
@@ -49,37 +61,16 @@ class PiCam:
         :param y: amount of pixels for y
         :return:
         """
-        self.resolution = (x, y)
-        self.camera.resolution = self.resolution
-
-    def low_light_capture(self):
-        """
-        Function which enables low lightning capture to take pictures/videos when it dark.
-        :return:
-        """
-        timestr = "pic" + time.strftime("%m-%d-%H:%M:%S") + ".jpg"
-        self.camera.framerate = Fraction(1, 6)
-        self.camera.sensor_mode = 3
-        self.camera.shutter_speed = 6000000
-        self.camera.iso = 800
-        # give it a long sleep to gain all the light
-        time.sleep(30)
-        self.camera.exposure_mode = 'off'
-        self.camera.capture(timestr)
-        # return settings back to normal
-        self.camera.framerate = 30
-        self.camera.sensor_mode = 0
-        self.camera.shutter_speed = 0
-        self.camera.iso = 0
-        self.camera.exposure_mode = 'auto'
+        self.settings.resolution = (x, y)
+        self.camera.resolution = self.settings.resolution
 
     def set_brightness(self, value):
         """
         Set the contrast of the camera valuing from 0-100
         :param value: given brightness value from 0-100
         """
-        self.brightness = value
-        self.camera.brightness = self.brightness
+        self.settings.brightness = value
+        self.camera.brightness = self.settings.brightness
 
     def get_brightness(self):
         """
@@ -93,8 +84,8 @@ class PiCam:
         Set the contrast of the camera valuing from 0-100
         :param value: given contrast value from 0-100
         """
-        self.contrast = value
-        self.camera.contrast = self.contrast
+        self.settings.contrast = value
+        self.camera.contrast = self.settings.contrast
 
     def get_contrast(self):
         """
