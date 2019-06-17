@@ -5,7 +5,7 @@ from time import strftime, localtime
 from fractions import Fraction
 
 
-class PiCam:
+class PiCamV1:
     """
     Picam class
     Default resolution = 1280 by 720
@@ -66,8 +66,6 @@ class PiCam:
         :return:
         """
 
-
-
         self.settings.resolution = (x, y)
         self.camera.resolution = self.settings.resolution
 
@@ -107,6 +105,10 @@ class PiCam:
         :return: contrast value
         """
         return self.camera.contrast
+
+
+def PiCameraFactory():
+    return PiCamV1()
 
 
 class PiCameraConfigurationHandler:
