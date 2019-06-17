@@ -1,21 +1,34 @@
 class BasePiCameraConfiguration:
     def __init__(self):
-        self.contrast = None
-        self.brightness = None
-        self.shutter_speed = None
+        self.settings = dict()
+        pass
 
     def __copy__(self, other):
         for key, value in self.__dict__:
             if value is not None:
                 setattr(other, key, value)
 
-    def apply(self, camera):
-        self.__copy__(camera)
+    def apply(self, pi_camera_instance):
+        for k, v in self.settings:
+            pi_camera_instance.set_param(k, v)
 
 
 class LowLightCameraConfiguration(BasePiCameraConfiguration):
     """The basic configuration that uses the low light options that the camera permits."""
-    pass
+
+    def __init__(self):
+        """
+        Function which enables low lightning capture to take pictures/videos when it dark.
+        :return:
+        """
+
+        self.settings = {
+            'framerate': 30,
+            'exposure_mode': 'off',
+            'sensor_mode': '3',
+            'shutter_speed': '6000000',
+            'iso': '800',
+        }
 
 
 class DefaultConfiguration(BasePiCameraConfiguration):
@@ -33,5 +46,8 @@ class CustomPiCameraConfiguration(BasePiCameraConfiguration):
 
     def __init__(self, **kwargs):
         super().__init__()
+
+        self.settings = dict()
         for k, v in kwargs.items():
+            self.settings.k = v
             setattr(self, k, v)
