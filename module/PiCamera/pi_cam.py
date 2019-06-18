@@ -21,7 +21,11 @@ class PiCamV1:
             'brightness': self.set_brightness,
             'contrast': self.set_contrast
         }
-        self.settings = dict()
+        self.local_settings = {
+            'video_lock': False,
+            # video lock is to determine if the resolution can be recorded or needs to be captured.
+        }
+        self.video_resolutions = list()
 
         for k, v in kwargs.items():
             self.set_param(k, v)
@@ -75,6 +79,15 @@ class PiCamV1:
             [1, 30]
         ]
 
+        for i in range(1, len(allowed_video_resolutions)):
+            param = {
+                'x': allowed_video_resolutions[i][0],
+                'y': allowed_video_resolutions[i][1],
+                'aspect_frame_rate_min': allowed_frame_rates_ranges[i][0],
+                'aspect_frame_rate_max': allowed_frame_rates_ranges[i][1],
+            }
+            self.video_resolutions.append(VideoResolution(param))
+
     def set_resolution(self, x, y):
         """
         Changes the resolution of the PiCamera
@@ -83,16 +96,16 @@ class PiCamV1:
         :return:
         """
 
-        self.settings.resolution = (x, y)
-        self.camera.resolution = self.settings.resolution
+        self.local_settings.resolution = (x, y)
+        self.camera.resolution = self.local_settings.resolution
 
     def set_brightness(self, value):
         """
         Set the contrast of the camera valuing from 0-100
         :param value: given brightness value from 0-100
         """
-        self.settings.brightness = value
-        self.camera.brightness = self.settings.brightness
+        self.local_settings.brightness = value
+        self.camera.brightness = self.local_settings.brightness
 
     def get_brightness(self):
         """
@@ -106,15 +119,15 @@ class PiCamV1:
         :returns settings dict
         """
 
-        return self.settings
+        return self.local_settings
 
     def set_contrast(self, value):
         """
         Set the contrast of the camera valuing from 0-100
         :param value: given contrast value from 0-100
         """
-        self.settings.contrast = value
-        self.camera.contrast = self.settings.contrast
+        self.local_settings.contrast = value
+        self.camera.contrast = self.local_settings.contrast
 
     def get_contrast(self):
         """
