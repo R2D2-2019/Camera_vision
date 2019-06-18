@@ -140,7 +140,7 @@ class PiCamV1_3:
 
 
 def pi_camera_factory():
-    if picamera.revision = 'ov5647': #PiCam Revision 1.3
+    if picamera.revision == 'ov5647': #PiCam Revision 1.3
         return PiCamV1_3()
     
 
