@@ -23,8 +23,8 @@ class LowLightCameraConfiguration(BasePiCameraConfiguration):
         :return:
         """
         self.settings = {
-            'framerate': 50
-            
+            'framerate': 50,
+            'iso': 'a'
         }
 
 
@@ -58,11 +58,6 @@ class DefaultConfiguration(BasePiCameraConfiguration):
             'vflip': False,
             'zoom': (0.0, 0.0, 1.0, 1.0)
         }
-
-
-class AutoConfiguration(BasePiCameraConfiguration):
-    """Configuration that will try to use as many auto functions of the camera"""
-    pass
 
 
 class CustomPiCameraConfiguration(BasePiCameraConfiguration):
