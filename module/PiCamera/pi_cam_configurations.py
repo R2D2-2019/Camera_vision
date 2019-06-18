@@ -3,13 +3,13 @@ class BasePiCameraConfiguration:
         self.settings = dict()
         pass
 
-    def __copy__(self, other):
-        for key, value in self.__dict__:
+    def set_settings(self, other):
+        for key, value in self.settings.items():
             if value is not None:
                 setattr(other, key, value)
 
     def apply(self, pi_camera_instance):
-        for k, v in self.settings:
+        for k, v in self.settings.items():
             pi_camera_instance.set_param(k, v)
 
 
@@ -23,11 +23,8 @@ class LowLightCameraConfiguration(BasePiCameraConfiguration):
         :return:
         """
         self.settings = {
-            'framerate': 30,
-            'exposure_mode': 'off',
-            'sensor_mode': '3',
-            'shutter_speed': '6000000',
-            'iso': '800',
+            'framerate': 50
+            
         }
 
 
