@@ -22,6 +22,9 @@ class PiCamV1:
             'brightness': self.set_brightness,
             'contrast': self.set_contrast
         }
+        
+        self.unsupported_settings = ['stereo_decimate', 'stereo_mode'] # Unable to test these setting so they are blacklisted.
+        
         self.local_settings = {
             'video_lock': False,
             # video lock is to determine if the resolution can be recorded or needs to be captured.
@@ -37,6 +40,9 @@ class PiCamV1:
 
         if k in self.defined_settings.keys():
             self.defined_settings[k](v)
+        if k in self.unsupported_settings:
+            print('SETTING CAN NOT BE CONFIGURED')
+            return
         else:
             setattr(self.camera, k, v)  # I can imagine new functions will be implemented without needing
             # It's own validation, therefore I will implement a default behaviour call.
@@ -48,7 +54,8 @@ class PiCamV1:
         :return:
         """
         timestr = "vid" + strftime("%m-%d-%H:%M:%S", localtime()) + ".h264"
-        self.camera.start_recording(timestr, quality=30)
+        
+        self.camera.start_recording(timestr, quality=100)
         self.camera.wait_recording(time)
         self.camera.stop_recording()
         
@@ -149,9 +156,13 @@ class VideoResolution:
         return False
 
     def calculate_aspect_ratio(self, a, b):
-
         pass
+    
+    def valid_frame_rate(self, fps):
+        if self.aspect_frame_rate_min <= fps < self.aspect_frame_rate_max:
+            return True
+        return False
 
-    class PiCameraConfigurationHandler:
-        def __init__(self):
-            pass
+class PiCameraConfigurationHandler:
+    def __init__(self):
+        pass
