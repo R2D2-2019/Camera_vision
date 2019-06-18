@@ -5,7 +5,7 @@ from time import strftime, localtime
 from picamera import PiCamera
 
 
-class PiCamV1:
+class PiCamV1_3:
     """
     Picam class
     Default resolution = 1280 by 720
@@ -140,8 +140,9 @@ class PiCamV1:
 
 
 def pi_camera_factory():
-    # TODO : if picamera.revision > 1:
-    return PiCamV1()
+    if picamera.revision = 'ov5647': #PiCam Revision 1.3
+        return PiCamV1_3()
+    
 
 
 class VideoResolution:
