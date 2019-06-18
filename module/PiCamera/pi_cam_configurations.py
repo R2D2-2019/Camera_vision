@@ -14,7 +14,9 @@ class BasePiCameraConfiguration:
 
 
 class LowLightCameraConfiguration(BasePiCameraConfiguration):
-    """The basic configuration that uses the low light options that the camera permits."""
+    """The basic configuration that uses the low light options that the camera permits.
+    Recommend reading through the entire conversation: https://github.com/waveform80/picamera/issues/323
+    """
 
     def __init__(self):
         super().__init__()
@@ -23,8 +25,9 @@ class LowLightCameraConfiguration(BasePiCameraConfiguration):
         :return:
         """
         self.settings = {
-            'framerate': 50,
-            'iso': 'a'
+            'framerate': 20,
+            'exposure_mode': 'nightpreview',
+            'exposure_compensation': 25,
         }
 
 
