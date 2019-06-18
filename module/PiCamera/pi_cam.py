@@ -2,6 +2,7 @@
 
 import time
 from time import strftime, localtime
+from picamera import PiCamera
 
 
 class PiCamV1:
@@ -47,12 +48,10 @@ class PiCamV1:
         :return:
         """
         timestr = "vid" + strftime("%m-%d-%H:%M:%S", localtime()) + ".h264"
-        self.camera.start_preview()
         self.camera.start_recording(timestr, quality=30)
         self.camera.wait_recording(time)
         self.camera.stop_recording()
-        self.camera.stop_preview()
-
+        
     def capture(self):
         """
         Function to capture a single frame. The file is saved as a .jpg file with the name pic(moment of video taken)
@@ -95,17 +94,14 @@ class PiCamV1:
         :param y: amount of pixels for y
         :return:
         """
-
-        self.local_settings.resolution = (x, y)
-        self.camera.resolution = self.local_settings.resolution
+        self.camera.resolution = (x,y)
 
     def set_brightness(self, value):
         """
         Set the contrast of the camera valuing from 0-100
         :param value: given brightness value from 0-100
         """
-        self.local_settings.brightness = value
-        self.camera.brightness = self.local_settings.brightness
+        self.camera.brightness = value
 
     def get_brightness(self):
         """
@@ -126,8 +122,7 @@ class PiCamV1:
         Set the contrast of the camera valuing from 0-100
         :param value: given contrast value from 0-100
         """
-        self.local_settings.contrast = value
-        self.camera.contrast = self.local_settings.contrast
+        self.camera.contrast = value
 
     def get_contrast(self):
         """
