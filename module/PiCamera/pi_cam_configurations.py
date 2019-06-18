@@ -1,5 +1,6 @@
 class BasePiCameraConfiguration:
     def __init__(self):
+        self.settings = dict()
         pass
 
     def __copy__(self, other):
@@ -21,7 +22,6 @@ class LowLightCameraConfiguration(BasePiCameraConfiguration):
         Function which enables low lightning capture to take pictures/videos when it dark.
         :return:
         """
-
         self.settings = {
             'framerate': 30,
             'exposure_mode': 'off',
@@ -36,7 +36,9 @@ class DefaultConfiguration(BasePiCameraConfiguration):
     """
     Sets most camera settings to various default values.
     """
+
     def __init__(self):
+        super().__init__()
         self.settings = {
             '_exif_tags': {
                 'IFD0.Model': 'RP_%s' % 'revision',
