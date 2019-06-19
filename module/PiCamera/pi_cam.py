@@ -215,6 +215,13 @@ class VideoResolution:
         return False
 
     def validate(self, width, height, fps):
+        """
+        Validates if the settings coincide with a video resolution instance
+        :param width: resolution width
+        :param height: resolution height
+        :param fps: target FPS
+        :return: Bool, True if all checks validated, False if one or more checks failed
+        """
         return True is self.valid_frame_rate(fps) and self.is_resolution(width, height)
 
 
