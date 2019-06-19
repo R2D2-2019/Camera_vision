@@ -5,6 +5,18 @@ from time import strftime, localtime
 from picamera import PiCamera
 
 
+class PiCam:
+    def __init__(self, **kwargs):
+        pass
+
+    def set_param(self, k,v):
+        pass
+
+    def timed_record(self, time):
+        pass
+
+
+
 class PiCamV1_3:
     """
     Class PiCamV1_3 -> Revision 1.3
@@ -41,7 +53,7 @@ class PiCamV1_3:
             return self[item]
         if hasattr(self.camera, item):
             return self.camera[item]
-        
+
     @staticmethod
     def generate_path(prefix, extension):
         return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
