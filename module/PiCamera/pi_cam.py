@@ -5,9 +5,6 @@ from time import strftime, localtime
 from picamera import PiCamera
 
 
-def generate_path(prefix, extension):
-    return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
-
 
 class PiCamV1_3:
     """
@@ -38,6 +35,10 @@ class PiCamV1_3:
 
         for k, v in kwargs.items():
             self.set_param(k, v)
+
+    @staticmethod
+    def generate_path(prefix, extension):
+        return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
 
     def set_param(self, k, v):
         """
