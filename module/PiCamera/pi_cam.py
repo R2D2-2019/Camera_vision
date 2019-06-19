@@ -5,6 +5,10 @@ from time import strftime, localtime
 from picamera import PiCamera
 
 
+def generate_path(prefix, extension):
+    return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
+
+
 class PiCamV1_3:
     """
     Picam class
@@ -22,9 +26,10 @@ class PiCamV1_3:
             'brightness': self.set_brightness,
             'contrast': self.set_contrast
         }
-        
-        self.unsupported_settings = ['stereo_decimate', 'stereo_mode'] # Unable to test these setting so they are blacklisted.
-        
+
+        self.unsupported_settings = ['stereo_decimate',
+                                     'stereo_mode']  # Unable to test, so these settings are blacklisted.
+
         self.local_settings = {
             'video_lock': False,
             # video lock is to determine if the resolution can be recorded or needs to be captured.
@@ -35,39 +40,54 @@ class PiCamV1_3:
             self.set_param(k, v)
 
     def set_param(self, k, v):
+        """
+        :param k: String, the key that contains the name of the setting
+        :param v: Mixed, the value associated with the key
+        :return: Bool, True if storing has succeeded, False if attribute wasn't stored.
+        """
         """ I've opted not to attempt implementing all the different unique features.
         The reason for this is because I've counted well over 400 features."""
 
         if k in self.defined_settings.keys():
-            self.defined_settings[k](v)
+            return self.defined_settings[k](v)
         if k in self.unsupported_settings:
             print('SETTING CAN NOT BE CONFIGURED')
-            return
+            return False
         else:
             setattr(self.camera, k, v)  # I can imagine new functions will be implemented without needing
             # It's own validation, therefore I will implement a default behaviour call.
+        return True
 
-    def record(self, time):
+    def record(self, recording_seconds=10):
         """
-        This function records a video. The file is saved as a .mpeg file with the name vid(moment of video taken)
-        :param time: Time in seconds
+        This function records a video. The file is saved as a .h264 file with the name vid(moment of video taken)
+        :param recording_seconds: Time in seconds that will be recorded
         :return:
         """
-        timestr = "vid" + strftime("%m-%d-%H:%M:%S", localtime()) + ".h264"
-        
-        self.camera.start_recording(timestr, quality=100)
-        self.camera.wait_recording(time)
+        self.camera.start_recording("vid" + strftime("%m-%d-%H:%M:%S", localtime()) + ".h264", quality=100)
+        self.camera.wait_recording(recording_seconds)
         self.camera.stop_recording()
-        
+
+    def manual_capture(self, output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
+                       **options):
+
+        """Function that captures a full rolling shutter frame.
+        All the API functionalities are implemented, but actually documenting usage is out of scope at the moment.
+        Recommended read: https://picamera.readthedocs.io/en/latest/api_camera.html#picamera.PiCamera.capture
+        """
+
+        self.camera.capture(output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
+                            **options)
+
     def capture(self):
         """
-        Function to capture a single frame. The file is saved as a .jpg file with the name pic(moment of video taken)
+        Function to capture a single frame. Basic implementation of the manual_capture.
         :return:
         """
-        timestr = "pic" + time.strftime("%m-%d-%H:%M:%S") + ".jpg"
-        self.camera.capture(timestr)
+        self.manual_capture(generate_path("pic", ".jpg"))
 
     def instantiate_resolutions(self):
+        # TODO Add docs
         allowed_video_resolutions = [
             ['2592', '1944'],
             ['1296', '972'],
@@ -87,8 +107,8 @@ class PiCamV1_3:
 
         for i in range(1, len(allowed_video_resolutions)):
             param = {
-                'x': allowed_video_resolutions[i][0],
-                'y': allowed_video_resolutions[i][1],
+                'width': allowed_video_resolutions[i][0],
+                'height': allowed_video_resolutions[i][1],
                 'aspect_frame_rate_min': allowed_frame_rates_ranges[i][0],
                 'aspect_frame_rate_max': allowed_frame_rates_ranges[i][1],
             }
@@ -101,7 +121,7 @@ class PiCamV1_3:
         :param y: amount of pixels for y
         :return:
         """
-        self.camera.resolution = (x,y)
+        self.camera.resolution = (x, y)
 
     def set_brightness(self, value):
         """
@@ -140,29 +160,60 @@ class PiCamV1_3:
 
 
 def pi_camera_factory():
-    if picamera.revision == 'ov5647': #PiCam Revision 1.3
+    if picamera.revision == 'ov5647':  # PiCam Revision 1.3
         return PiCamV1_3()
-    
 
 
 class VideoResolution:
+    """The VideoResolution class is responsible for storing a video resolution option
+    As is described on the wiki, the rolling shutter introduces a series of challenges.
+    A rolling shutter can prevent the camera from recording or taking a sequence of pictures with pauses in between.
+    The VideoResolution class will store a singular option of a resolution.
+    """
 
     def __init__(self, **kwargs):
+        """
+        The constructor instantiate a series of variables that are assigned via key value.
+        Checks will need to be introduced individually
+        :param kwargs: key value arguments that are set via setattr()
+        """
+        """In order to make v"""
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def is_resolution(self, x, y):
-        if self.x is x and self.y is y:
+    def is_resolution(self, width, height):
+        """
+        Validation if the param
+        :param width: the resolutions width (e.g. 1920)
+        :param height: the resolution height (e.g. 1080)
+        :return:
+        """
+        if self.width is width and self.height is height:
             return True
         return False
 
-    def calculate_aspect_ratio(self, a, b):
+    @staticmethod
+    def calculate_aspect_ratio(width, height):
+        """The calculate aspect ration function is pretty self-explanatory,
+        Calculates the aspect ratio it and returns it
+
+        :param width: horizontal width
+        :param height: vertical height
+        :return: tuple of aspect ratio elements
+        """
+
         pass
-    
+
     def valid_frame_rate(self, fps):
+        """
+        Validates if a given FPS is allowed within the range of a resolution
+        :param fps: frames per second expected to set.
+        :return: Bool, true if valid, false if invalid
+        """
         if self.aspect_frame_rate_min <= fps < self.aspect_frame_rate_max:
             return True
         return False
+
 
 class PiCameraConfigurationHandler:
     def __init__(self):
