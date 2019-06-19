@@ -7,8 +7,9 @@ from picamera import PiCamera
 
 class PiCamV1_3:
     """
-    Picam class
-    Default resolution = 1280 by 720
+    Class PiCamV1_3 -> Revision 1.3
+    The main class that has been built for the PiCamera revision 1.3. using Python 3.7
+
     """
 
     def __init__(self, **kwargs):
@@ -35,6 +36,12 @@ class PiCamV1_3:
         for k, v in kwargs.items():
             self.set_param(k, v)
 
+    def __getattr__(self, item):
+        if hasattr(self, item):
+            return self[item]
+        if hasattr(self.camera, item):
+            return self.camera[item]
+        
     @staticmethod
     def generate_path(prefix, extension):
         return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
@@ -58,7 +65,7 @@ class PiCamV1_3:
             # It's own validation, therefore I will implement a default behaviour call.
         return True
 
-    def record(self, recording_seconds=10):
+    def timed_record(self, recording_seconds=10):
         """
         This function records a video. The file is saved as a .h264 file with the name vid(moment of video taken)
         :param recording_seconds: Time in seconds that will be recorded
