@@ -5,7 +5,6 @@ from time import strftime, localtime
 from picamera import PiCamera
 
 
-
 class PiCamV1_3:
     """
     Picam class
@@ -161,7 +160,7 @@ class PiCamV1_3:
 
 
 def pi_camera_factory():
-    if picamera.revision == 'ov5647':  # PiCam Revision 1.3
+    if PiCamera.revision == 'ov5647':  # PiCam Revision 1.3
         return PiCamV1_3()
 
 
@@ -214,6 +213,9 @@ class VideoResolution:
         if self.aspect_frame_rate_min <= fps < self.aspect_frame_rate_max:
             return True
         return False
+
+    def validate(self, width, height, fps):
+        return True is self.valid_frame_rate(fps) and self.is_resolution(width, height)
 
 
 class PiCameraConfigurationHandler:
