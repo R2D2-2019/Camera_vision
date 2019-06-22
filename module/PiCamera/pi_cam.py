@@ -96,7 +96,7 @@ class PiCam:
         pass
 
 
-class PiCamV1_3(PiCam):
+class PiCamV13(PiCam):
     """
     Class PiCamV1_3 -> Revision 1.3
     The main class that has been built for the PiCamera revision 1.3. using Python 3.7
@@ -204,7 +204,14 @@ class VideoResolution:
         Checks will need to be introduced individually
         :param kwargs: key value arguments that are set via setattr()
         """
-        """In order to make v"""
+
+        # Initialising the default expected variables
+        self.width = None
+        self.height = None
+        self.aspect_frame_rate_min = None
+        self.aspect_frame_rate_max = None
+
+
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -262,7 +269,7 @@ class VideoResolution:
         return True is self.valid_frame_rate(fps) and self.is_resolution(width, height)
 
 
-class PiCamV2(PiCamV1_3):
+class PiCamV21(PiCamV13):
     """The PiCamV2 is similar to the revision 1.3 and has been made the correct the differences.
     To clarify what differences mean, some functions have been overridden to cause the same or similar result as the 1.3
     To the future user of this module, I recommend testing it thoroughly, I didn't get a chance to get a V2 version.
