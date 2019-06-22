@@ -1,3 +1,8 @@
+import io
+import picamera as PiCamera
+from threading import Condition
+
+
 class BaseDataStream:
     """The BaseDataStream class can be used as an abstract class for the output of the PiCamera.
     The Abstract class allows the output to be manipulated or formatted in a way that the library doesn't contain
@@ -26,3 +31,19 @@ class BaseDataStream:
         :return: None
         """
         pass
+
+
+class StreamingDataStream(object):
+    def __init__(self):
+        self.frame = None
+        self.buffer = io.BytesIO()
+        self.condition = Condition()
+
+    def write(self, byte):
+        if byte.startswith(b'\xff\xd8'):  # Checking if it's a JPEG image
+            self.buffer.truncate()  # Our old buffer is useless, because we get a new one!
+            with self.condition:
+                self.frame = self.buffer.getvalue()
+                self.condition.notify_all()  # Notifying all threads that we have a new hit.
+            self.buffer.seek(0)
+        return self.buffer.write(byte)
