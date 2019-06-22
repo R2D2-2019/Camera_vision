@@ -62,12 +62,11 @@ class PiCamV1_3(PiCam):
 
     def set_iso(self, iso):
         """The set_iso function is used to store an iso value to the camera.
-        The function call will also show the filtering of ISO values."""
-
-        """ The V2 Camera has different calculation with grain.
+        The function call will also show the filtering of ISO values.
+        The V2 Camera has different calculation with grain.
         Contrary to the V1.3 it follows the ISO film speed standard. 
         Given that it is more likely that different camera's or other ISO readings can be used externally,
-        it is preferabble to use a standard rather than a propriatery calculation.       
+        it is preferable to use a standard rather than a proprietary calculation.
         """
 
         self.camera.iso = iso * 0.0184  # the multiplication to get the ISO standard grain with v1.3 camera.
