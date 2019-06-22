@@ -33,8 +33,7 @@ class PiCam:
         :param k: String, the key that contains the name of the setting
         :param v: Mixed, the value associated with the key
         :return: Bool, True if storing has succeeded, False if attribute wasn't stored.
-        """
-        """ I've opted not to attempt implementing all the different unique features.
+        I've opted not to attempt implementing all the different unique features.
         The reason for this is because I've counted well over 400 features."""
 
         if k in self.defined_settings.keys():
@@ -125,7 +124,9 @@ class PiCamV13(PiCam):
             # video lock is to determine if the resolution can be recorded or needs to be captured.
             'video_resolution': None  # Storing the pre-defined video resolutions.
         }
-        self.video_resolutions = list()  # Dep
+
+        self.video_resolutions = list()  # Each camera has a limited amount of video resolutions.
+        # The resolutions are stored to use later on.
 
         for k, v in kwargs.items():
             self.set_param(k, v)
@@ -186,6 +187,47 @@ class PiCamV13(PiCam):
                 'aspect_frame_rate_max': allowed_frame_rates_ranges[i][1],
             }
             self.video_resolutions.append(VideoResolution(param))
+
+    def set_brightness(self, value):
+        """
+        Set the brightness of the camera valuing from 0-100
+        Can be updated during operations.
+        Default value is 50
+        :param value: given brightness value from 0-100
+        """
+        if value in range(0, 100):
+            self.camera.brightness = value
+
+    def get_brightness(self):
+        """
+        Returns the brightness of the camera
+        :return: brightness value
+        """
+        return self.camera.brightness
+
+    def get_settings(self):
+        """ Returns the dict containing all the settings that have been stored.
+        :returns settings dict
+        """
+
+        return self.local_settings
+
+    def set_contrast(self, value):
+        """
+        Set the contrast of the camera valuing from 0-100
+        Can be done during operations running.
+        :param value: given contrast value from 0-100
+        """
+
+        if value in range(0, 100):
+            self.camera.contrast = value
+
+    def get_contrast(self):
+        """
+        Returns the current contrast of the camera
+        :return: contrast value
+        """
+        return self.camera.contrast
 
 
 class VideoResolution:
