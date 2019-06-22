@@ -320,6 +320,6 @@ def pi_camera_factory(**kwargs):
     however there are stereoscopic modes that indicate it should be possible.
     The original developer of the picamera library has also indicated that those capabilities haven't been tested."""
     if PiCamera.revision == 'ov5647':  # PiCam Revision 1.3
-        return PiCamV1_3(**kwargs)
+        return PiCamV13(**kwargs)
     if PiCamera.revision == 'IMX219':  # PiCam Revision 2.x
-        return PiCamV2(**kwargs)
+        return PiCamV21(**kwargs)
