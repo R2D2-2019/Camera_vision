@@ -46,13 +46,16 @@ class PiCam:
             # It's own validation, therefore I will implement a default behaviour call.
         return True
 
-    def timed_record(self, recording_seconds=10):
+    def timed_record(self, output=None, recording_seconds=10):
         """
         This function records a video. The file is saved as a .h264 file with the name vid(moment of video taken)
         :param recording_seconds: Time in seconds that will be recorded
         :return:
         """
-        self.camera.start_recording("vid" + strftime("%m-%d-%H:%M:%S", localtime()) + ".h264", quality=100)
+
+        if not output:
+            output = "vid" + strftime("%m-%d-%H:%M:%S", localtime()) + ".h264"
+        self.camera.start_recording(output, quality=100)
         self.camera.wait_recording(recording_seconds)
         self.camera.stop_recording()
 
@@ -63,7 +66,6 @@ class PiCam:
         The API functionality is implemented, but actually documenting usage is out of scope at the moment.
         Recommended read: https://picamera.readthedocs.io/en/latest/api_camera.html#picamera.PiCamera.capture
         """
-
         self.camera.capture(output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
                             **options)
 
