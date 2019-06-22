@@ -158,10 +158,13 @@ class PiCamV1_3(PiCam):
 
     def set_brightness(self, value):
         """
-        Set the contrast of the camera valuing from 0-100
+        Set the brightness of the camera valuing from 0-100
+        Can be updated during operations.
+        Default value is 50
         :param value: given brightness value from 0-100
         """
-        self.camera.brightness = value
+        if value in range(0, 100):
+            self.camera.brightness = value
 
     def get_brightness(self):
         """
@@ -180,9 +183,12 @@ class PiCamV1_3(PiCam):
     def set_contrast(self, value):
         """
         Set the contrast of the camera valuing from 0-100
+        Can be done during operations running.
         :param value: given contrast value from 0-100
         """
-        self.camera.contrast = value
+
+        if value in range(0, 100):
+            self.camera.contrast = value
 
     def get_contrast(self):
         """
@@ -221,6 +227,12 @@ class VideoResolution:
         return False
 
     @staticmethod
+    def gcd(a, b):
+        if b == 0:
+            return a
+        return VideoResolution.gcd(b, a % b)
+
+    @staticmethod
     def calculate_aspect_ratio(width, height):
         """The calculate aspect ration function is pretty self-explanatory,
         Calculates the aspect ratio it and returns it
@@ -230,7 +242,11 @@ class VideoResolution:
         :return: tuple of aspect ratio elements
         """
 
-        pass
+        divisor = VideoResolution.gcd(1920, 1080)
+
+        x = int(width / divisor)
+        y = int(height / divisor)
+        return x, y
 
     def valid_frame_rate(self, fps):
         """
