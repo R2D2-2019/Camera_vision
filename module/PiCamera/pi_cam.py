@@ -275,6 +275,33 @@ class PiCamV2(PiCamV1_3):
     To the future user of this module, I recommend testing it thoroughly, I didn't get a chance to get a V2 version.
     """
 
+    def instantiate_resolutions(self):
+        allowed_video_resolutions = [
+            ['1920', '1080'],
+            ['3280', '2464'],
+            ['1640', '1232'],
+            ['1640', '922'],
+            ['1280', '720'],
+            ['640', '480'],
+        ]
+        allowed_frame_rates_ranges = [
+            [0.1, 30],
+            [0.1, 15],
+            [0.1, 40],
+            [0.1, 40],
+            [40, 90],
+            [40, 90],
+        ]
+
+        for i in range(1, len(allowed_video_resolutions)):
+            params = {
+                'width': allowed_video_resolutions[i][0],
+                'height': allowed_video_resolutions[i][1],
+                'aspect_frame_rate_min': allowed_frame_rates_ranges[i][0],
+                'aspect_frame_rate_max': allowed_frame_rates_ranges[i][1],
+            }
+            self.register_video_resolution(VideoResolution(params))
+
     def set_iso(self, value):
         self.camera.iso = value  # Doesn't require a different verification due to factory calibration.
 
