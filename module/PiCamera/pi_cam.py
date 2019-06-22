@@ -9,15 +9,14 @@ class PiCam:
     def __init__(self, **kwargs):
         pass
 
-    def set_param(self, k,v):
+    def set_param(self, k, v):
         pass
 
     def timed_record(self, time):
         pass
 
 
-
-class PiCamV1_3:
+class PiCamV1_3(PiCam):
     """
     Class PiCamV1_3 -> Revision 1.3
     The main class that has been built for the PiCamera revision 1.3. using Python 3.7
@@ -25,6 +24,7 @@ class PiCamV1_3:
     """
 
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.camera = PiCamera()
 
         # defined_settings are the settings that are currently implemented with their own validation of camera input.
@@ -33,7 +33,9 @@ class PiCamV1_3:
         self.defined_settings = {
             'resolution': self.set_resolution,
             'brightness': self.set_brightness,
-            'contrast': self.set_contrast
+            'contrast': self.set_contrast,
+            'iso': self.set_iso,
+
         }
 
         self.unsupported_settings = ['stereo_decimate',
@@ -57,6 +59,11 @@ class PiCamV1_3:
     @staticmethod
     def generate_path(prefix, extension):
         return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
+
+    def set_iso(self, value):
+        """The set_iso function is used to store an iso value to the camera.
+        The function call will also show the filtering of ISO values."""
+        pass
 
     def set_param(self, k, v):
         """
@@ -91,7 +98,7 @@ class PiCamV1_3:
                        **options):
 
         """Function that captures a full rolling shutter frame.
-        All the API functionalities are implemented, but actually documenting usage is out of scope at the moment.
+        The API functionality is implemented, but actually documenting usage is out of scope at the moment.
         Recommended read: https://picamera.readthedocs.io/en/latest/api_camera.html#picamera.PiCamera.capture
         """
 
@@ -103,7 +110,7 @@ class PiCamV1_3:
         Function to capture a single frame. Basic implementation of the manual_capture.
         :return:
         """
-        self.manual_capture(generate_path("pic", ".jpg"))
+        self.manual_capture(self.generate_path("pic", ".jpg"))
 
     def instantiate_resolutions(self):
         # TODO Add docs
@@ -178,11 +185,6 @@ class PiCamV1_3:
         return self.camera.contrast
 
 
-def pi_camera_factory():
-    if PiCamera.revision == 'ov5647':  # PiCam Revision 1.3
-        return PiCamV1_3()
-
-
 class VideoResolution:
     """The VideoResolution class is responsible for storing a video resolution option
     As is described on the wiki, the rolling shutter introduces a series of challenges.
@@ -244,6 +246,24 @@ class VideoResolution:
         return True is self.valid_frame_rate(fps) and self.is_resolution(width, height)
 
 
+class PiCamV2(PiCamV1_3):
+    """The PiCamV2 is simalr to the revision 1.3 and has been made accordingly"""
+
+
 class PiCameraConfigurationHandler:
     def __init__(self):
         pass
+
+
+def pi_camera_factory(**kwargs):
+    """ The pi_camera_factory is a simple function that will instantiate the desired camera class
+    based on the connected camera. Keep in mind that is done via differentiating the revision that the hardware returns.
+    Having a copy camera that does not adhere to same lens, might pose an issue when instantiating.
+    Furthermore, keep in mind that the currently factory only works when ONE camera is connected.
+    I am unaware of anyway to connect a second camera to single Pi,
+    however there are stereoscopic modes that indicate it should be possible.
+    The original developer of the picamera library has also indicated that those capabilities haven't been tested."""
+    if PiCamera.revision == 'ov5647':  # PiCam Revision 1.3
+        return PiCamV1_3(**kwargs)
+    if PiCamera.revision == 'IMX219':  # PiCam Revision 2.x
+        return PiCamV2(**kwargs)
