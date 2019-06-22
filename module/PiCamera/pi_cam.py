@@ -60,9 +60,17 @@ class PiCamV1_3(PiCam):
     def generate_path(prefix, extension):
         return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
 
-    def set_iso(self, value):
+    def set_iso(self, iso):
         """The set_iso function is used to store an iso value to the camera.
         The function call will also show the filtering of ISO values."""
+
+        """ The V2 Camera has different calculation with grain.
+        Contrary to the V1.3 it follows the ISO film speed standard. 
+        Given that it is more likely that different camera's or other ISO readings can be used externally,
+        it is preferabble to use a standard rather than a propriatery calculation.       
+        """
+
+        self.camera.iso = iso * 0.0184  # the multiplication to get the ISO standard grain with v1.3 camera.
         pass
 
     def set_param(self, k, v):
@@ -247,7 +255,13 @@ class VideoResolution:
 
 
 class PiCamV2(PiCamV1_3):
-    """The PiCamV2 is simalr to the revision 1.3 and has been made accordingly"""
+    """The PiCamV2 is similar to the revision 1.3 and has been made the correct the differences.
+    To clarify what differences mean, some functions have been overridden to cause the same or similar result as the 1.3
+    To the future user of this module, I recommend testing it thoroughly, I didn't get a chance to get a V2 version.
+    """
+
+    def set_iso(self, value):
+        self.camera.iso = value  # Doesn't require a different verification due to factory calibration.
 
 
 class PiCameraConfigurationHandler:
