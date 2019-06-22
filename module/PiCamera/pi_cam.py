@@ -89,9 +89,6 @@ class PiCam:
         self.camera.resolution = (x, y)
         return False
 
-    def timed_record(self, time):
-        pass
-
     def instantiate_resolution(self):
         pass
 
@@ -210,7 +207,6 @@ class VideoResolution:
         self.height = None
         self.aspect_frame_rate_min = None
         self.aspect_frame_rate_max = None
-
 
         for key, value in kwargs.items():
             setattr(self, key, value)
