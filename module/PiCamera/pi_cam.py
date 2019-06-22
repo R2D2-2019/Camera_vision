@@ -7,70 +7,26 @@ from picamera import PiCamera
 
 class PiCam:
     def __init__(self, **kwargs):
-        pass
-
-    def set_param(self, k, v):
-        pass
-
-    def timed_record(self, time):
-        pass
-
-
-class PiCamV1_3(PiCam):
-    """
-    Class PiCamV1_3 -> Revision 1.3
-    The main class that has been built for the PiCamera revision 1.3. using Python 3.7
-
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
         self.camera = PiCamera()
 
         # defined_settings are the settings that are currently implemented with their own validation of camera input.
         # This means that other settings can be accessible but don't have any level of validation a.k.a no idea if they
         # Truly work as expected.
-        self.defined_settings = {
-            'resolution': self.set_resolution,
-            'brightness': self.set_brightness,
-            'contrast': self.set_contrast,
-            'iso': self.set_iso,
-
-        }
+        self.defined_settings = {}
 
         self.unsupported_settings = ['stereo_decimate',
                                      'stereo_mode']  # Unable to test, so these settings are blacklisted.
 
-        self.local_settings = {
-            'video_lock': False,
-            # video lock is to determine if the resolution can be recorded or needs to be captured.
-        }
-        self.video_resolutions = list()
+        # Once might argue that storing these values in an attribute would be a better approach.
+        # The problem that might arise is naming conflicts, it's easier to know who handles what based on a prefix.
+        self.local_settings = {}
 
-        for k, v in kwargs.items():
-            self.set_param(k, v)
+        self.video_resolutions = list()  # Depending on the camera, there are multiple video_resolutions possible.
 
-    def __getattr__(self, item):
-        if hasattr(self, item):
-            return self[item]
-        if hasattr(self.camera, item):
-            return self.camera[item]
+        self.instantiate_resolution()  # Instantiating the possible resolutions so that validation can commence.
 
-    @staticmethod
-    def generate_path(prefix, extension):
-        return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
-
-    def set_iso(self, iso):
-        """The set_iso function is used to store an iso value to the camera.
-        The function call will also show the filtering of ISO values.
-        The V2 Camera has different calculation with grain.
-        Contrary to the V1.3 it follows the ISO film speed standard. 
-        Given that it is more likely that different camera's or other ISO readings can be used externally,
-        it is preferable to use a standard rather than a proprietary calculation.
-        """
-
-        self.camera.iso = iso * 0.0184  # the multiplication to get the ISO standard grain with v1.3 camera.
-        pass
+    def register_video_resolution(self, resolution):
+        self.video_resolutions.append(resolution)
 
     def set_param(self, k, v):
         """
@@ -112,6 +68,93 @@ class PiCamV1_3(PiCam):
         self.camera.capture(output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
                             **options)
 
+    def set_resolution(self, x, y):
+        """
+        Changes the resolution of the PiCamera. Not all resolutions allow recording
+        Based on the resolutions filtering will be applied, however possible resolutions
+        :param x: amount of pixels for x
+        :param y: amount of pixels for y
+        :return: Bool, True if the resolution can be recorded, False if resolution set but no video.
+        """
+
+        for vid_res in self.video_resolutions:
+            if vid_res.is_resolution(x, y):
+                self.camera.resolution = (x, y)
+                self.local_settings.video_lock = False
+                self.local_settings.video_resolution = vid_res
+                return True
+
+        self.local_settings.video_resolution = None
+        self.local_settings.video_lock = True
+        self.camera.resolution = (x, y)
+        return False
+
+    def timed_record(self, time):
+        pass
+
+    def instantiate_resolution(self):
+        pass
+
+
+class PiCamV1_3(PiCam):
+    """
+    Class PiCamV1_3 -> Revision 1.3
+    The main class that has been built for the PiCamera revision 1.3. using Python 3.7
+
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.camera = PiCamera()
+
+        # defined_settings are the settings that are currently implemented with their own validation of camera input.
+        # This means that other settings can be accessible but don't have any level of validation a.k.a no idea if they
+        # Truly work as expected.
+        self.defined_settings = {
+            'resolution': self.set_resolution,
+            'brightness': self.set_brightness,
+            'contrast': self.set_contrast,
+            'iso': self.set_iso,
+
+        }
+
+        self.unsupported_settings = ['stereo_decimate',
+                                     'stereo_mode']  # Unable to test, so these settings are blacklisted.
+
+        # Once might argue that storing these values in an attribute would be a better approach.
+        # The problem that might arise is naming conflicts, it's easier to know who handles what based on a prefix.
+        self.local_settings = {
+            'video_lock': False,
+            # video lock is to determine if the resolution can be recorded or needs to be captured.
+            'video_resolution': None  # Storing the pre-defined video resolutions.
+        }
+        self.video_resolutions = list()  # Dep
+
+        for k, v in kwargs.items():
+            self.set_param(k, v)
+
+    def __getattr__(self, item):
+        if hasattr(self, item):
+            return self[item]
+        if hasattr(self.camera, item):
+            return self.camera[item]
+
+    @staticmethod
+    def generate_path(prefix, extension):
+        return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
+
+    def set_iso(self, iso):
+        """The set_iso function is used to store an iso value to the camera.
+        The function call will also show the filtering of ISO values.
+        The V2 Camera has different calculation with grain.
+        Contrary to the V1.3 it follows the ISO film speed standard.
+        Given that it is more likely that different camera's or other ISO readings can be used externally,
+        it is preferable to use a standard rather than a proprietary calculation.
+        """
+
+        self.camera.iso = iso * 0.0184  # the multiplication to get the ISO standard grain with v1.3 camera.
+        pass
+
     def capture(self):
         """
         Function to capture a single frame. Basic implementation of the manual_capture.
@@ -146,56 +189,6 @@ class PiCamV1_3(PiCam):
                 'aspect_frame_rate_max': allowed_frame_rates_ranges[i][1],
             }
             self.video_resolutions.append(VideoResolution(param))
-
-    def set_resolution(self, x, y):
-        """
-        Changes the resolution of the PiCamera
-        :param x: amount of pixels for x
-        :param y: amount of pixels for y
-        :return:
-        """
-        self.camera.resolution = (x, y)
-
-    def set_brightness(self, value):
-        """
-        Set the brightness of the camera valuing from 0-100
-        Can be updated during operations.
-        Default value is 50
-        :param value: given brightness value from 0-100
-        """
-        if value in range(0, 100):
-            self.camera.brightness = value
-
-    def get_brightness(self):
-        """
-        Returns the brightness of the camera
-        :return: brightness value
-        """
-        return self.camera.brightness
-
-    def get_settings(self):
-        """ Returns the dict containing all the settings that have been stored.
-        :returns settings dict
-        """
-
-        return self.local_settings
-
-    def set_contrast(self, value):
-        """
-        Set the contrast of the camera valuing from 0-100
-        Can be done during operations running.
-        :param value: given contrast value from 0-100
-        """
-
-        if value in range(0, 100):
-            self.camera.contrast = value
-
-    def get_contrast(self):
-        """
-        Returns the current contrast of the camera
-        :return: contrast value
-        """
-        return self.camera.contrast
 
 
 class VideoResolution:
