@@ -298,11 +298,6 @@ class PiCamV21(PiCamV13):
         self.camera.iso = value  # Doesn't require a different verification due to factory and standard calibration.
 
 
-class PiCameraConfigurationHandler:
-    def __init__(self):
-        pass
-
-
 def pi_camera_factory(**kwargs):
     """ The pi_camera_factory is a simple function that will instantiate the desired camera class
     based on the connected camera. Keep in mind that is done via differentiating the revision that the hardware returns.
