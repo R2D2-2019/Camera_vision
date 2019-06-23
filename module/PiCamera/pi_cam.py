@@ -327,6 +327,8 @@ class PiCamV21(PiCamV13):
     """
 
     def instantiate_resolutions(self):
+        """Instantiating the video resolutions that the PiCam V2.1 supports.
+        Source: https://picamera.readthedocs.io/en/latest/fov.html#sensor-modes"""
         allowed_video_resolutions = [
             ['1920', '1080'],
             ['3280', '2464'],
@@ -354,7 +356,7 @@ class PiCamV21(PiCamV13):
             self.register_video_resolution(VideoResolution(params))
 
     def set_iso(self, value):
-        self.camera.iso = value  # Doesn't require a different verification due to factory calibration.
+        self.camera.iso = value  # Doesn't require a different verification due to factory and standard calibration.
 
 
 class PiCameraConfigurationHandler:
