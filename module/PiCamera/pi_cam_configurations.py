@@ -1,15 +1,12 @@
 class BasePiCameraConfiguration:
     def __init__(self):
-        """
-
-        """
-        self.settings = dict()
-        pass
+        """ BasePiCameraConfiguration class contains all the required functions to use a specified configuration"""
+        self.settings = dict()  # Used to store the settings.
 
     def set_settings(self, other):
         """
-
-        :param other: Direct attribute
+        Stores settings to a picamera class.
+        :param other: PiCamera class, used for setting the attributes directly.
         :return:
         """
         for key, value in self.settings.items():
@@ -18,7 +15,7 @@ class BasePiCameraConfiguration:
 
     def apply(self, pi_camera_instance):
         """
-
+        Applies the pi configuration to a pi camera instance via the set_param calls
         :param pi_camera_instance:
         :return:
         """
