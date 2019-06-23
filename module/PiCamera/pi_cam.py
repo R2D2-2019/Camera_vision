@@ -22,7 +22,7 @@ class PiCam:
 
         # Once might argue that storing these values in an attribute would be a better approach.
         # The problem that might arise is naming conflicts, it's easier to know who handles what based on a prefix.
-        self.local_settings = {}
+        self.local_settings = {'recording': False}
 
         self.video_resolutions = list()  # Depending on the camera, there are multiple video_resolutions possible.
 
@@ -71,6 +71,13 @@ class PiCam:
         self.camera.wait_recording(recording_seconds)
         self.camera.stop_recording()
         return start_time
+
+    def infinite_record(self, output=None):
+        if not output:
+            output = self.generate_path("vid", ".h264")
+        if not self.local_settings.recording:
+            self.camera.start_recording(output, quality=100)
+
 
     def manual_capture(self, output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
                        **options):
