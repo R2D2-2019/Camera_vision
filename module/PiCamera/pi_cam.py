@@ -78,6 +78,9 @@ class PiCam:
         if not self.local_settings.recording:
             self.camera.start_recording(output, quality=100)
 
+    def stop_recording(self):
+        if self.local_settings.recording:
+            self.camera.stop_recording()
 
     def manual_capture(self, output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
                        **options):
