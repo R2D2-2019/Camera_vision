@@ -75,14 +75,17 @@ class PiCam:
         self.camera.capture(output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
                             **options)
 
-    def set_resolution(self, x, y, force=False):
+    def set_resolution(self, x, y, nearest=False):
         """
         Changes the resolution of the PiCamera. Not all resolutions allow recording
         Based on the resolutions filtering will be applied, however possible resolutions
         :param x: amount of pixels for x
         :param y: amount of pixels for y
+        :param nearest: set the video resolution if not find the nearest. Will always result in video lock false.
         :return: Bool, True if the resolution can be recorded, False if resolution set but no video.
         """
+        if nearest:
+            x, y = PiCamera.PiResolution(x, y).pad()  # returns an tuple with x and y coordinates.
 
         for vid_res in self.video_resolutions:
             if vid_res.is_resolution(x, y):
