@@ -12,7 +12,7 @@ class PiCam:
         # defined_settings are the settings that are currently implemented with their own validation of camera input.
         # This means that other settings can be accessible but don't have any level of validation a.k.a no idea if they
         # Truly work as expected.
-        self.defined_settings = {}
+        self.defined_settings = {'set_resolution', self.set_resolution}
 
         self.unsupported_settings = ['stereo_decimate',
                                      'stereo_mode']  # Unable to test, so these settings are blacklisted.
@@ -118,15 +118,10 @@ class PiCamV13(PiCam):
         # This means that other settings can be accessible but don't have any level of validation a.k.a no idea if they
         # Truly work as expected.
         self.defined_settings = {
-            'resolution': self.set_resolution,
             'brightness': self.set_brightness,
             'contrast': self.set_contrast,
             'iso': self.set_iso,
-
         }
-
-        self.unsupported_settings = ['stereo_decimate',
-                                     'stereo_mode']  # Unable to test, so these settings are blacklisted.
 
         # Once might argue that storing these values in an attribute would be a better approach.
         # The problem that might arise is naming conflicts, it's easier to know who handles what based on a prefix.
@@ -148,18 +143,18 @@ class PiCamV13(PiCam):
         if hasattr(self.camera, item):
             return self.camera[item]
 
-    def set_iso(self, iso, return_value=False):
+    def set_iso(self, iso):
         """The set_iso function is used to store an iso value to the camera.
         The function call will also show the filtering of ISO values.
         The V2 Camera has different calculation with grain.
         Contrary to the V1.3 it follows the ISO film speed standard.
         Given that it is more likely that different camera's or other ISO readings can be used externally,
         it is preferable to use a standard rather than a proprietary calculation.
+        source: https://picamera.readthedocs.io/en/latest/api_camera.html?highlight=iso#picamera.PiCamera.iso
 
         The PiCameraV2
         :param iso: integer: the new iso value that will be set.
         The ISO value must be in a possible range, if not the nearest will be selected.
-        :param return_value: bool: if the new ISO value needs to be returned
         :return iso: the actual set value of ISO.
         the actual return value will always be different due to the grain calculation.
         In normal circumstances won't be useful. Therefore the return is conditional.
@@ -169,9 +164,6 @@ class PiCamV13(PiCam):
         if iso not in possible_iso_range:
             iso = min(possible_iso_range, key=lambda x: abs(x - iso))  # lambda that finds nearest value and sets to iso
         self.camera.iso = iso * 0.0184  # the multiplication to get the ISO standard grain with v1.3 camera.
-
-        if return_value:
-            return self.camera.iso
 
     def capture(self):
         """
@@ -329,9 +321,9 @@ class VideoResolution:
 
 
 class PiCamV21(PiCamV13):
-    """The PiCamV2 is similar to the revision 1.3 and has been made the correct the differences.
+    """The PiCamV21 is similar to the revision 1.3 and has been made the correct the differences.
     To clarify what differences mean, some functions have been overridden to cause the same or similar result as the 1.3
-    To the future user of this module, I recommend testing it thoroughly, I didn't get a chance to get a V2 version.
+    To the future user of this module, I recommend testing it thoroughly, I didn't get a chance to get a V2.1 version.
     """
 
     def instantiate_resolutions(self):
