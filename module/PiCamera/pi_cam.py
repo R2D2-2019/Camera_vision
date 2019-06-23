@@ -145,10 +145,6 @@ class PiCamV13(PiCam):
         if hasattr(self.camera, item):
             return self.camera[item]
 
-    @staticmethod
-    def generate_path(prefix, extension):
-        return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
-
     def set_iso(self, iso, return_value=False):
         """The set_iso function is used to store an iso value to the camera.
         The function call will also show the filtering of ISO values.
