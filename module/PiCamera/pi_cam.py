@@ -178,7 +178,7 @@ class PiCamV13(PiCam):
         self.manual_capture(self.generate_path("pic", ".jpg"))
 
     def instantiate_resolutions(self):
-        # TODO Add docs
+        """Instantiating the video resolutions that the PiCam V1.3 supports."""
         allowed_video_resolutions = [
             ['2592', '1944'],
             ['1296', '972'],
