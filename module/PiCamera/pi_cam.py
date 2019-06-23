@@ -75,7 +75,7 @@ class PiCam:
         self.camera.capture(output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
                             **options)
 
-    def set_resolution(self, x, y):
+    def set_resolution(self, x, y, force=False):
         """
         Changes the resolution of the PiCamera. Not all resolutions allow recording
         Based on the resolutions filtering will be applied, however possible resolutions
@@ -178,7 +178,8 @@ class PiCamV13(PiCam):
         self.manual_capture(self.generate_path("pic", ".jpg"))
 
     def instantiate_resolutions(self):
-        """Instantiating the video resolutions that the PiCam V1.3 supports."""
+        """Instantiating the video resolutions that the PiCam V1.3 supports.
+        Source: https://picamera.readthedocs.io/en/latest/fov.html#sensor-modes"""
         allowed_video_resolutions = [
             ['2592', '1944'],
             ['1296', '972'],
