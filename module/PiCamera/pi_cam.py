@@ -60,7 +60,7 @@ class PiCam:
         """
         start_time = strftime("%m-%d-%H:%M:%S", localtime())
         if not output:
-            output = "vid" + start_time + ".h264"
+            output = self.generate_path("vid", ".h264")
         self.camera.start_recording(output, quality=100)
         self.camera.wait_recording(recording_seconds)
         self.camera.stop_recording()
