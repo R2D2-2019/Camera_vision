@@ -1,14 +1,27 @@
 class BasePiCameraConfiguration:
     def __init__(self):
+        """
+
+        """
         self.settings = dict()
         pass
 
     def set_settings(self, other):
+        """
+
+        :param other: Direct attribute
+        :return:
+        """
         for key, value in self.settings.items():
             if value is not None:
                 setattr(other, key, value)
 
     def apply(self, pi_camera_instance):
+        """
+
+        :param pi_camera_instance:
+        :return:
+        """
         for k, v in self.settings.items():
             pi_camera_instance.set_param(k, v)
 
@@ -85,8 +98,9 @@ class CameraConfigurator:
     def apply_configuration(self, configuration_id, pi_camera_instance):
         """
         :param configuration_id: the unique identifier of the configuration that is requested
-        :param pi_camera_instance: an instance of the pi camera.
+        :param pi_camera_instance: an instance of the PiCam NOT THE PICAMERA IT SELF.
         :return:
         """
+
         if configuration_id in range(0, len(self.configuration)):
             self.configuration[configuration_id].apply(pi_camera_instance)
