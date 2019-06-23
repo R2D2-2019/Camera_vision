@@ -73,3 +73,20 @@ class CustomPiCameraConfiguration(BasePiCameraConfiguration):
         for k, v in kwargs.items():
             self.settings.k = v
             setattr(self, k, v)
+
+
+class CameraConfigurator:
+    """Container for managing and assigning the different camera configurations."""
+
+    def __init__(self):
+        """ Initialises the configurations that are present."""
+        self.configuration = [DefaultConfiguration, LowLightCameraConfiguration, CustomPiCameraConfiguration]
+
+    def apply_configuration(self, configuration_id, instance):
+        """
+        :param configuration_id: the unique identifier of the configuration that is requested
+        :param instance: an instance of the pi camera.
+        :return:
+        """
+        if configuration_id in range(0, len(self.configuration)):
+            self.configuration[configuration_id].apply(instance)
