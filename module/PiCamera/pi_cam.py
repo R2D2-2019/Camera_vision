@@ -28,6 +28,10 @@ class PiCam:
     def register_video_resolution(self, resolution):
         self.video_resolutions.append(resolution)
 
+    @staticmethod
+    def generate_path(prefix, extension):
+        return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
+
     def set_param(self, k, v):
         """
         :param k: String, the key that contains the name of the setting
