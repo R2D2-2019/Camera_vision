@@ -80,13 +80,13 @@ class CameraConfigurator:
 
     def __init__(self):
         """ Initialises the configurations that are present."""
-        self.configuration = [DefaultConfiguration, LowLightCameraConfiguration, CustomPiCameraConfiguration]
+        self.configuration = [DefaultConfiguration(), LowLightCameraConfiguration(), CustomPiCameraConfiguration()]
 
-    def apply_configuration(self, configuration_id, instance):
+    def apply_configuration(self, configuration_id, pi_camera_instance):
         """
         :param configuration_id: the unique identifier of the configuration that is requested
-        :param instance: an instance of the pi camera.
+        :param pi_camera_instance: an instance of the pi camera.
         :return:
         """
         if configuration_id in range(0, len(self.configuration)):
-            self.configuration[configuration_id].apply(instance)
+            self.configuration[configuration_id].apply(pi_camera_instance)
