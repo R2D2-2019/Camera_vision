@@ -49,19 +49,21 @@ class PiCam:
     def timed_record(self, output=None, recording_seconds=10):
         """
         This function records a video. The file is saved as a .h264 file with the name vid(moment of video taken)
+        :param output: a Data Stream instance, if left None a .h264 video file will be generated.
         :param recording_seconds: Time in seconds that will be recorded
-        :return:
+        :return: String that contains the time when the stream was started.
+        This can be used to either locate the video, serve as a log or be ignored entirely.
         """
-
+        start_time = strftime("%m-%d-%H:%M:%S", localtime())
         if not output:
-            output = "vid" + strftime("%m-%d-%H:%M:%S", localtime()) + ".h264"
+            output = "vid" + start_time + ".h264"
         self.camera.start_recording(output, quality=100)
         self.camera.wait_recording(recording_seconds)
         self.camera.stop_recording()
+        return start_time
 
     def manual_capture(self, output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
                        **options):
-
         """Function that captures a full rolling shutter frame.
         The API functionality is implemented, but actually documenting usage is out of scope at the moment.
         Recommended read: https://picamera.readthedocs.io/en/latest/api_camera.html#picamera.PiCamera.capture
@@ -143,17 +145,30 @@ class PiCamV13(PiCam):
     def generate_path(prefix, extension):
         return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
 
-    def set_iso(self, iso):
+    def set_iso(self, iso, return_value=False):
         """The set_iso function is used to store an iso value to the camera.
         The function call will also show the filtering of ISO values.
         The V2 Camera has different calculation with grain.
         Contrary to the V1.3 it follows the ISO film speed standard.
         Given that it is more likely that different camera's or other ISO readings can be used externally,
         it is preferable to use a standard rather than a proprietary calculation.
+
+        The PiCameraV2
+        :param iso: integer: the new iso value that will be set.
+        The ISO value must be in a possible range, if not the nearest will be selected.
+        :param return_value: bool: if the new ISO value needs to be returned
+        :return iso: the actual set value of ISO.
+        the actual return value will always be different due to the grain calculation.
+        In normal circumstances won't be useful. Therefore the return is conditional.
         """
 
+        possible_iso_range = [100, 200, 320, 400, 500, 640, 800]  # The camera has limited amount of ISO values.
+        if iso not in possible_iso_range:
+            iso = min(possible_iso_range, key=lambda x: abs(x - iso))  # lambda that finds nearest value and sets to iso
         self.camera.iso = iso * 0.0184  # the multiplication to get the ISO standard grain with v1.3 camera.
-        pass
+
+        if return_value:
+            return self.camera.iso
 
     def capture(self):
         """
