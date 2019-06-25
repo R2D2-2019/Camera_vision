@@ -4,7 +4,7 @@ from time import strftime, localtime
 from picamera import PiCamera
 
 from modules.rgb_camera.module.PiCamera.video_resolution import VideoResolution
-from modules.rgb_camera.module.PiCamera.pi_cam_configurations import CameraConfigurator
+from modules.rgb_camera.module.PiCamera.pi_cam_configurations import PiCameraConfigurator
 
 
 class PiCam:
@@ -28,7 +28,7 @@ class PiCam:
         self.__instantiate_resolution()  # Instantiating the possible resolutions so that validation can commence.
 
         if 'configuration' in kwargs:
-            CameraConfigurator().apply_configuration(kwargs.get('configuration'), self._camera)
+            PiCameraConfigurator().apply_configuration(kwargs.get('configuration'), self._camera)
 
     def register_video_resolution(self, resolution):
         self._video_resolutions.append(resolution)

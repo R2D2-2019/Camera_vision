@@ -85,7 +85,7 @@ class CustomPiCameraConfiguration(BasePiCameraConfiguration):
             setattr(self, k, v)
 
 
-class CameraConfigurator:
+class PiCameraConfigurator:
     """Container for managing and assigning the different camera configurations."""
 
     def __init__(self):

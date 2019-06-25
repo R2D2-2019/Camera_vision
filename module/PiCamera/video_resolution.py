@@ -30,7 +30,6 @@ class VideoResolution:
         """
         return self.width is width and self.height is height
 
-
     @staticmethod
     def gcd(a, b):
         if b == 0:
