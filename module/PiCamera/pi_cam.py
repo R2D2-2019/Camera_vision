@@ -25,7 +25,7 @@ class PiCam:
 
         self._video_resolutions = list()  # Depending on the camera, there are multiple video_resolutions possible.
 
-        self.instantiate_resolution()  # Instantiating the possible resolutions so that validation can commence.
+        self.__instantiate_resolution()  # Instantiating the possible resolutions so that validation can commence.
 
         if 'configuration' in kwargs:
             CameraConfigurator().apply_configuration(kwargs.get('configuration'), self._camera)
@@ -124,7 +124,7 @@ class PiCam:
         self._camera.resolution = (width, height)
         return False
 
-    def instantiate_resolution(self):
+    def __instantiate_resolution(self):
         pass
 
 
@@ -196,7 +196,7 @@ class PiCamV13(PiCam):
         """
         self.manual_capture(self.generate_path("pic", ".jpg"))
 
-    def instantiate_resolutions(self):
+    def __instantiate_resolutions(self):
         """Instantiating the video resolutions that the PiCam V1.3 supports.
         Source: https://picamera.readthedocs.io/en/latest/fov.html#sensor-modes"""
         allowed_video_resolutions = [
@@ -273,7 +273,7 @@ class PiCamV21(PiCamV13):
     To the future user of this module, I recommend testing it thoroughly, I didn't get a chance to get a V2.1 version.
     """
 
-    def instantiate_resolutions(self):
+    def __instantiate_resolutions(self):
         """Instantiating the video resolutions that the PiCam V2.1 supports.
         Source: https://picamera.readthedocs.io/en/latest/fov.html#sensor-modes"""
         allowed_video_resolutions = [
