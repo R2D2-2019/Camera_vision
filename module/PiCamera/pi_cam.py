@@ -1,6 +1,5 @@
 # module specific includes
 
-import time
 from time import strftime, localtime
 from picamera import PiCamera
 
