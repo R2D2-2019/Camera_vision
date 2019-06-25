@@ -60,9 +60,7 @@ class VideoResolution:
         :param fps: frames per second expected to set.
         :return: Bool, true if valid, false if invalid
         """
-        if self.aspect_frame_rate_min <= fps < self.aspect_frame_rate_max:
-            return True
-        return False
+        return self.aspect_frame_rate_min <= fps < self.aspect_frame_rate_max
 
     def validate(self, width, height, fps):
         """
