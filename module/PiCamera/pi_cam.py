@@ -72,12 +72,22 @@ class PiCam:
         return start_time
 
     def infinite_record(self, output=None):
+        """
+        If a recording needs to be started without knowing when to end, it can be started without giving a specific
+        end time. The reason this might be useful is when doing a live stream or recording until a robot turns off.
+        :param output: Object or becomes default .h264 file name
+        :return: void
+        """
         if not output:
             output = self.generate_path("vid", ".h264")
         if not self.local_settings.recording:
             self.camera.start_recording(output, quality=100)
 
     def stop_recording(self):
+        """
+        Used when a recording is already underway and needs to be stopped. Already recorded information is stored.
+        :return:
+        """
         if self.local_settings.recording:
             self.camera.stop_recording()
 
