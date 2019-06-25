@@ -1,6 +1,7 @@
-import picamera
+from modules.rgb_camera.module.pi_cam import PiCam
 from time import sleep
 
+""" This is only here for legacy reasons, deleting it will be discussed.
 if __name__ == "__main__":
 	print("[+] Pi Camera test")
 
@@ -23,3 +24,4 @@ if __name__ == "__main__":
 	test_cam.stop_recording()
 
 	print("[!] done...")
+"""
