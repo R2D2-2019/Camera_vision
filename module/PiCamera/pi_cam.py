@@ -235,13 +235,6 @@ class PiCamV13(PiCam):
         if value in range(0, 100):
             self._camera.brightness = value
 
-    def get_brightness(self):
-        """
-        Returns the brightness of the camera
-        :return: brightness value
-        """
-        return self._camera.brightness
-
     def get_settings(self):
         """ Returns the dict containing all the settings that have been stored.
         :returns settings dict
@@ -258,13 +251,6 @@ class PiCamV13(PiCam):
 
         if value in range(0, 100):
             self._camera.contrast = value
-
-    def get_contrast(self):
-        """
-        Returns the current contrast of the camera
-        :return: contrast value
-        """
-        return self._camera.contrast
 
 
 class PiCamV21(PiCamV13):
