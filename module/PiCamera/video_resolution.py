@@ -28,9 +28,8 @@ class VideoResolution:
         :param height: the resolution height (e.g. 1080)
         :return:
         """
-        if self.width is width and self.height is height:
-            return True
-        return False
+        return self.width is width and self.height is height
+
 
     @staticmethod
     def gcd(a, b):
