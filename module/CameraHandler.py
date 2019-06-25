@@ -7,35 +7,13 @@ class CameraHandler:
     def __init__(self, comm: BaseComm):
         self.comm = comm
         self.comm.listen_for([FrameType.PLACEHOLDER])  # Implement frametype ASAP!
-        """ Should detect which camera's are present"""
-        pass
-
-    def capture(self):
-        """ Instructs a camera to take an image"""
+        # TODO: Define the frame types to listen for
+        # TODO: Register the present camera(s)
         pass
 
     def process(self):
-
-        while self.comm.has_data():
-            frame = self.comm.get_data()
-
-            if frame.request:
-                continue
-
-            values = frame.get_data()
-
-            if values[0] == "record":
-                self.record(values(1))  # values[1] should hold the time
-            else:
-                continue  # should add more functionality later?
+        # TODO: Redirect the present camera to
+        pass
 
     def stop(self):
         self.comm.stop()
-
-    def start_recording(self):
-        """ Instructs a camera to start recording """
-        pass
-
-    def stop_recording(self):
-        """ Instructs a camera to stop recording """
-        pass
