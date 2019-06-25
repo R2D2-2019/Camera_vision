@@ -9,33 +9,33 @@ from modules.rgb_camera.module.PiCamera.pi_cam_configurations import CameraConfi
 
 class PiCam:
     def __init__(self, **kwargs):
-        self.camera = PiCamera()
+        self._camera = PiCamera()
 
         # defined_settings are the settings that are currently implemented with their own validation of camera input.
         # This means that other settings can be accessible but don't have any level of validation a.k.a no idea if they
         # Truly work as expected.
-        self.defined_settings = {'set_resolution', self.set_resolution}
+        self._defined_settings = {'set_resolution', self.set_resolution}
 
-        self.unsupported_settings = ['stereo_decimate',
-                                     'stereo_mode']  # Unable to test, so these settings are blacklisted.
+        self._unsupported_settings = ['stereo_decimate',
+                                      'stereo_mode']  # Unable to test, so these settings are blacklisted.
 
         # Once might argue that storing these values in an attribute would be a better approach.
         # The problem that might arise is naming conflicts, it's easier to know who handles what based on a prefix.
-        self.local_settings = {'recording': False}
+        self._local_settings = {'recording': False}
 
-        self.video_resolutions = list()  # Depending on the camera, there are multiple video_resolutions possible.
+        self._video_resolutions = list()  # Depending on the camera, there are multiple video_resolutions possible.
 
         self.instantiate_resolution()  # Instantiating the possible resolutions so that validation can commence.
 
         if 'configuration' in kwargs:
-            CameraConfigurator().apply_configuration(kwargs.get('configuration'), self.camera)
+            CameraConfigurator().apply_configuration(kwargs.get('configuration'), self._camera)
 
     def register_video_resolution(self, resolution):
-        self.video_resolutions.append(resolution)
+        self._video_resolutions.append(resolution)
 
     @staticmethod
     def generate_path(prefix, extension):
-        return prefix + time.strftime("%m-%d-%H:%M:%S") + extension
+        return prefix + strftime("%m-%d-%H:%M:%S") + extension
 
     def set_param(self, k, v):
         """
@@ -45,13 +45,13 @@ class PiCam:
         I've opted not to attempt implementing all the different unique features.
         The reason for this is because I've counted well over 400 features."""
 
-        if k in self.defined_settings.keys():
-            return self.defined_settings[k](v)
-        if k in self.unsupported_settings:
+        if k in self._defined_settings.keys():
+            return self._defined_settings[k](v)
+        if k in self._unsupported_settings:
             print('SETTING CAN NOT BE CONFIGURED')
             return False
         else:
-            setattr(self.camera, k, v)  # I can imagine new functions will be implemented without needing
+            setattr(self._camera, k, v)  # I can imagine new functions will be implemented without needing
             # It's own validation, therefore I will implement a default behaviour call.
         return True
 
@@ -66,9 +66,9 @@ class PiCam:
         start_time = strftime("%m-%d-%H:%M:%S", localtime())
         if not output:
             output = self.generate_path("vid", ".h264")
-        self.camera.start_recording(output, quality=100)
-        self.camera.wait_recording(recording_seconds)
-        self.camera.stop_recording()
+        self._camera.start_recording(output, quality=100)
+        self._camera.wait_recording(recording_seconds)
+        self._camera.stop_recording()
         return start_time
 
     def infinite_record(self, output=None):
@@ -80,16 +80,16 @@ class PiCam:
         """
         if not output:
             output = self.generate_path("vid", ".h264")
-        if not self.local_settings.recording:
-            self.camera.start_recording(output, quality=100)
+        if not self._local_settings.recording:
+            self._camera.start_recording(output, quality=100)
 
     def stop_recording(self):
         """
         Used when a recording is already underway and needs to be stopped. Already recorded information is stored.
         :return:
         """
-        if self.local_settings.recording:
-            self.camera.stop_recording()
+        if self._local_settings.recording:
+            self._camera.stop_recording()
 
     def manual_capture(self, output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
                        **options):
@@ -97,8 +97,8 @@ class PiCam:
         The API functionality is implemented, but actually documenting usage is out of scope at the moment.
         Recommended read: https://picamera.readthedocs.io/en/latest/api_camera.html#picamera.PiCamera.capture
         """
-        self.camera.capture(output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
-                            **options)
+        self._camera.capture(output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
+                             **options)
 
     def set_resolution(self, x, y, nearest=False):
         """
@@ -112,16 +112,16 @@ class PiCam:
         if nearest:
             x, y = PiCamera.PiResolution(x, y).pad()  # returns an tuple with x and y coordinates.
 
-        for vid_res in self.video_resolutions:
+        for vid_res in self._video_resolutions:
             if vid_res.is_resolution(x, y):
-                self.camera.resolution = (x, y)
-                self.local_settings.video_lock = False
-                self.local_settings.video_resolution = vid_res
+                self._camera.resolution = (x, y)
+                self._local_settings.video_lock = False
+                self._local_settings.video_resolution = vid_res
                 return True
 
-        self.local_settings.video_resolution = None
-        self.local_settings.video_lock = True
-        self.camera.resolution = (x, y)
+        self._local_settings.video_resolution = None
+        self._local_settings.video_lock = True
+        self._camera.resolution = (x, y)
         return False
 
     def instantiate_resolution(self):
@@ -137,12 +137,11 @@ class PiCamV13(PiCam):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.camera = PiCamera()
 
         # defined_settings are the settings that are currently implemented with their own validation of camera input.
         # This means that other settings can be accessible but don't have any level of validation a.k.a no idea if they
         # Truly work as expected.
-        self.defined_settings = {
+        self._defined_settings = {
             'brightness': self.set_brightness,
             'contrast': self.set_contrast,
             'iso': self.set_iso,
@@ -150,13 +149,13 @@ class PiCamV13(PiCam):
 
         # Once might argue that storing these values in an attribute would be a better approach.
         # The problem that might arise is naming conflicts, it's easier to know who handles what based on a prefix.
-        self.local_settings = {
+        self._local_settings = {
             'video_lock': False,
             # video lock is to determine if the resolution can be recorded or needs to be captured.
             'video_resolution': None  # Storing the pre-defined video resolutions.
         }
 
-        self.video_resolutions = list()  # Each camera has a limited amount of video resolutions.
+        self._video_resolutions = list()  # Each camera has a limited amount of video resolutions.
         # The resolutions are stored to use later on.
 
         for k, v in kwargs.items():
@@ -165,8 +164,8 @@ class PiCamV13(PiCam):
     def __getattr__(self, item):
         if hasattr(self, item):
             return self[item]
-        if hasattr(self.camera, item):
-            return self.camera[item]
+        if hasattr(self._camera, item):
+            return self._camera[item]
 
     def set_iso(self, iso):
         """The set_iso function is used to store an iso value to the camera.
@@ -188,7 +187,7 @@ class PiCamV13(PiCam):
         possible_iso_range = [100, 200, 320, 400, 500, 640, 800]  # The camera has limited amount of ISO values.
         if iso not in possible_iso_range:
             iso = min(possible_iso_range, key=lambda x: abs(x - iso))  # lambda that finds nearest value and sets to iso
-        self.camera.iso = iso * 0.0184  # the multiplication to get the ISO standard grain with v1.3 camera.
+        self._camera.iso = iso * 0.0184  # the multiplication to get the ISO standard grain with v1.3 camera.
 
     def capture(self):
         """
@@ -234,14 +233,14 @@ class PiCamV13(PiCam):
         :param value: given brightness value from 0-100
         """
         if value in range(0, 100):
-            self.camera.brightness = value
+            self._camera.brightness = value
 
     def get_brightness(self):
         """
         Returns the brightness of the camera
         :return: brightness value
         """
-        return self.camera.brightness
+        return self._camera.brightness
 
     def get_settings(self):
         """ Returns the dict containing all the settings that have been stored.
@@ -258,14 +257,14 @@ class PiCamV13(PiCam):
         """
 
         if value in range(0, 100):
-            self.camera.contrast = value
+            self._camera.contrast = value
 
     def get_contrast(self):
         """
         Returns the current contrast of the camera
         :return: contrast value
         """
-        return self.camera.contrast
+        return self._camera.contrast
 
 
 class PiCamV21(PiCamV13):
@@ -304,7 +303,7 @@ class PiCamV21(PiCamV13):
             self.register_video_resolution(VideoResolution(params))
 
     def set_iso(self, value):
-        self.camera.iso = value  # Doesn't require a different verification due to factory and standard calibration.
+        self._camera.iso = value  # Doesn't require a different verification due to factory and standard calibration.
 
 
 def pi_camera_factory(**kwargs):
