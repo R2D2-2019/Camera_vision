@@ -2,9 +2,9 @@
 
 from time import strftime, localtime, sleep
 
-from pi_cam_configurations import PiCameraConfigurator
+from modules.rgb_camera.module.pi_cam_configurations import PiCameraConfigurator
 from picamera import PiCamera
-from video_resolution import VideoResolution
+from modules.rgb_camera.module.video_resolution import VideoResolution
 
 
 class PiCam:
