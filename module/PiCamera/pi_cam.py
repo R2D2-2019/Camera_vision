@@ -1,10 +1,10 @@
 # module specific includes
 
 from time import strftime, localtime, sleep
-from picamera import PiCamera
 
-from video_resolution import VideoResolution
 from pi_cam_configurations import PiCameraConfigurator
+from picamera import PiCamera
+from video_resolution import VideoResolution
 
 
 class PiCam:
@@ -14,7 +14,7 @@ class PiCam:
         # defined_settings are the settings that are currently implemented with their own validation of camera input.
         # This means that other settings can be accessible but don't have any level of validation a.k.a no idea if they
         # Truly work as expected.
-        self._defined_settings = {'set_resolution', self.set_resolution}
+        self._defined_settings = {}
 
         self._unsupported_settings = ['stereo_decimate',
                                       'stereo_mode']  # Unable to test, so these settings are blacklisted.
@@ -44,7 +44,6 @@ class PiCam:
         :return: Bool, True if storing has succeeded, False if attribute wasn't stored.
         I've opted not to attempt implementing all the different unique features.
         The reason for this is because I've counted well over 400 features."""
-
         if k in self._defined_settings.keys():
             return self._defined_settings[k](v)
         if k in self._unsupported_settings:
@@ -105,17 +104,17 @@ class PiCam:
                              **options)
         self._local_settings.recording = False
 
-    def set_resolution(self, width, height, nearest=False):
+    def set_resolution(self, resolution, nearest=False):
         """
         Changes the resolution of the PiCamera. Not all resolutions allow recording
         Based on the resolutions filtering will be applied, however possible resolutions
-        :param width: amount of pixels for x
-        :param height: amount of pixels for y
+        :param resolution: stored as width and height IN THAT ORDER
         :param nearest: set the video resolution if not find the nearest. Will always result in video lock false.
         :return: Bool, True if the resolution can be recorded, False if resolution set but no video.
         """
+        width, height = resolution
         if nearest:
-            width, height = PiCamera.PiResolution(width, height).pad()  # returns an tuple with x and y coordinates.
+            width, height = self._camera.PiResolution(width, height).pad()  # returns an tuple with x and y coordinates.
 
         for vid_res in self._video_resolutions:
             if vid_res.is_resolution(width, height):
@@ -147,6 +146,7 @@ class PiCamV13(PiCam):
         # This means that other settings can be accessible but don't have any level of validation a.k.a no idea if they
         # Truly work as expected.
         self._defined_settings = {
+            'resolution': self.resolution,
             'brightness': self.set_brightness,
             'contrast': self.set_contrast,
             'iso': self.set_iso,
@@ -166,11 +166,14 @@ class PiCamV13(PiCam):
         for k, v in kwargs.items():
             self.set_param(k, v)
 
-    def __getattr__(self, item):
-        if hasattr(self, item):
-            return self[item]
-        if hasattr(self._camera, item):
-            return self._camera[item]
+    def __getattr__(self, key):
+        try:
+            return object.__getattribute__(self, key)
+        except AttributeError:
+            try:
+                return object.__getattribute__(self._camera, key)
+            except AttributeError:
+                return None
 
     def set_iso(self, iso):
         """The set_iso function is used to store an iso value to the camera.
@@ -253,7 +256,6 @@ class PiCamV13(PiCam):
         Can be done during operations running.
         :param value: given contrast value from 0-100
         """
-
         if value in range(0, 100):
             self._camera.contrast = value
 
@@ -305,7 +307,6 @@ def pi_camera_factory(**kwargs):
     I am unaware of anyway to connect a second camera to single Pi,
     however there are stereoscopic modes that indicate it should be possible.
     The original developer of the picamera library has also indicated that those capabilities haven't been tested."""
-    if PiCamera.revision == 'ov5647':  # PiCam Revision 1.3
-        return PiCamV13(**kwargs)
     if PiCamera.revision == 'IMX219':  # PiCam Revision 2.x
         return PiCamV21(**kwargs)
+    return PiCamV13(**kwargs)
