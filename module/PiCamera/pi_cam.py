@@ -1,10 +1,10 @@
 # module specific includes
 
-from time import strftime, localtime
+from time import strftime, localtime, sleep
 from picamera import PiCamera
 
-from modules.rgb_camera.module.PiCamera.video_resolution import VideoResolution
-from modules.rgb_camera.module.PiCamera.pi_cam_configurations import PiCameraConfigurator
+from video_resolution import VideoResolution
+from pi_cam_configurations import PiCameraConfigurator
 
 
 class PiCam:
@@ -63,11 +63,11 @@ class PiCam:
         :return: String that contains the time when the stream was started.
         This can be used to either locate the video, serve as a log or be ignored entirely.
         """
-        start_time = strftime("%m-%d-%H:%M:%S", localtime())
+        start_time = strftime("%m-%d-%H-%M-%S", localtime())
         if not output:
             output = self.generate_path("vid", ".h264")
-        self._camera.start_recording(output, quality=100)
-        self._camera.wait_recording(recording_seconds)
+        self._camera.start_recording(output)
+        sleep(recording_seconds)
         self._camera.stop_recording()
         return start_time
 
@@ -81,6 +81,7 @@ class PiCam:
         if not output:
             output = self.generate_path("vid", ".h264")
         if not self._local_settings.recording:
+            self._local_settings.recording = True
             self._camera.start_recording(output, quality=100)
 
     def stop_recording(self):
@@ -89,6 +90,7 @@ class PiCam:
         :return:
         """
         if self._local_settings.recording:
+            self._local_settings.recording = False
             self._camera.stop_recording()
 
     def manual_capture(self, output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
@@ -97,8 +99,11 @@ class PiCam:
         The API functionality is implemented, but actually documenting usage is out of scope at the moment.
         Recommended read: https://picamera.readthedocs.io/en/latest/api_camera.html#picamera.PiCamera.capture
         """
+
+        self._local_settings.recording = True
         self._camera.capture(output, format=None, use_video_port=False, resize=None, splitter_port=0, bayer=False,
                              **options)
+        self._local_settings.recording = False
 
     def set_resolution(self, width, height, nearest=False):
         """
