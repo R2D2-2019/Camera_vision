@@ -84,7 +84,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     'Removed streaming client %s: %s',
                     self.client_address, str(e))
         else:
-            self.send_error(404)  # Some tried to access a specific endpoint that doesn't excises. 404 in order.
+            self.send_error(404)  # In case someone tries to access a specific endpoint that doesn't exists. 
+            # 404 in order.
             self.end_headers()
             # We're not redirecting to index.html, because this will just cause a performance hit of multiple visitors
 
